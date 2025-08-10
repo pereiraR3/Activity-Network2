@@ -4,8 +4,6 @@ from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-# Configurações de conexão com o banco de dados PostgreSQL
-# É altamente recomendável o uso de variáveis de ambiente para armazenar informações sensíveis.
 app.config['POSTGRES_USER'] = os.environ.get('DB_USER', 'postgres')
 app.config['POSTGRES_PASSWORD'] = os.environ.get('DB_PASSWORD', '12345')
 app.config['POSTGRES_HOST'] = os.environ.get('DB_HOST', 'localhost')

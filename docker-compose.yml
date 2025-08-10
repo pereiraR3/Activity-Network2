@@ -19,9 +19,9 @@ services:
   db:
     image: postgres:latest
     environment:
-      - POSTGRES_DB=minhadb
-      - POSTGRES_USER=usuario
-      - POSTGRES_PASSWORD=senhaforte
+      - POSTGRES_DB=bancoRedes2
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
