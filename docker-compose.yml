@@ -1,0 +1,29 @@
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=bancoRedes2
+      - DB_USER=postgres
+      - DB_PASSWORD=12345
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=minhadb
+      - POSTGRES_USER=usuario
+      - POSTGRES_PASSWORD=senhaforte
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
