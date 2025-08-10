@@ -4,39 +4,28 @@ from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-app.config['POSTGRES_USER'] = os.environ.get('DB_USER', 'postgres')
-app.config['POSTGRES_PASSWORD'] = os.environ.get('DB_PASSWORD', '12345')
-app.config['POSTGRES_HOST'] = os.environ.get('DB_HOST', 'localhost')
-app.config['POSTGRES_PORT'] = os.environ.get('DB_PORT', '5432')
-app.config['POSTGRES_DB'] = os.environ.get('DB_NAME', 'bancoRedes2')
-
 def get_db_connection():
-    """Estabelece a conexão com o banco de dados."""
+    """Estabelece a conexão com o banco de dados usando variáveis de ambiente."""
     conn = psycopg2.connect(
-        host=app.config['POSTGRES_HOST'],
-        database=app.config['POSTGRES_DB'],
-        user=app.config['POSTGRES_USER'],
-        password=app.config['POSTGRES_PASSWORD'],
-        port=app.config['POSTGRES_PORT']
+        host=os.environ.get('DB_HOST'),
+        database=os.environ.get('DB_NAME'),
+        user=os.environ.get('DB_USER'),
+        password=os.environ.get('DB_PASSWORD'),
+        port=os.environ.get('DB_PORT', '5432')
     )
     return conn
 
-@app.route('/db_version', methods=['GET'])
+@app.route('/db_version')
 def get_db_version():
     """Endpoint que retorna a versão do banco de dados PostgreSQL."""
-    conn = None
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute('SELECT version();')
-        db_version = cur.fetchone()[0]
-        cur.close()
-        return jsonify({'db_version': db_version})
-    except (Exception, psycopg2.DatabaseError) as error:
-        return jsonify({'error': str(error)}), 500
-    finally:
-        if conn is not None:
-            conn.close()
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute('SELECT version();')
+                db_version = cur.fetchone()[0]
+                return jsonify({'status': 'success', 'db_version': db_version})
+    except (Exception, psycopg2.Error) as error:
+        return jsonify({'status': 'error', 'message': str(error)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
